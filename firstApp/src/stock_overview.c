@@ -37,35 +37,32 @@ void stock_app_scene_on_enter_stock_overview(void* context) {
 bool stock_app_scene_on_event_stock_overview(void* context, SceneManagerEvent event) {
     StockTrackerApp* app = context;
 
-    if(event.type == SceneManagerEventTypeCustom) {
+    if(event.type != SceneManagerEventTypeCustom) {
         return false;
     }
 
     if (event.event == stockTracker_NextStock || 
         event.event == stockTracker_PreviousStock) {
-            with_view_model(
-                app->ticker_overview,
-                StockOverviewModel* model,
-                {
-                    size_t count = app->ticker_count;
+        
+            size_t count = app->ticker_count;
 
-                    if(count > 0) {
-                        if(event.event == stockTracker_NextStock){
-                            model->selected_index =
-                                (model->selected_index + 1) % count;
-                        } else {
-                            model->selected_index = (model->selected_index + count - 1) % count;
-                        }
-                    }
-                },
-                true
-            );
+            if(count > 0) {
+                if(event.event == stockTracker_NextStock) {
+                    app->selected_stock_index = (app->selected_stock_index + 1) % count;
+                } else {
+                    app->selected_stock_index = (app->selected_stock_index + count - 1) % count;
+                }
 
+                view_commit_model(app->ticker_overview, true);
+            }
+        
+    
             return true;
-        }
+    }
 
     if (event.event == stockTracker_stockResponseReceived) {
         view_commit_model(app->ticker_overview, true);
+        return true;
     }
 
     return false; // don't handle any events
@@ -86,7 +83,7 @@ void stock_app_scene_on_exit_stock_overview(void* context) {
 
 
 void stock_app_overview_draw(Canvas* canvas, void* context) {
-    StockTrackerApp* app = context;
+    StockTrackerApp* app = *(StockTrackerApp**)context;
 
     canvas_clear(canvas);
     canvas_set_font(canvas, FontPrimary);

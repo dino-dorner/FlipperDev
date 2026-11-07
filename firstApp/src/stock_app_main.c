@@ -142,7 +142,35 @@ void stock_app_view_dispatcher_init(StockTrackerApp* app) {
     app->menu = menu_alloc();
     app->ticker_select = text_input_alloc();
     app->ticker_overview = view_alloc();
+
+    view_allocate_model(
+        app->ticker_overview,
+        ViewModelTypeLocking,
+        sizeof(StockTrackerApp*)
+    );
+
     app->ticker_delete = submenu_alloc();
+
+    view_set_context(app->ticker_overview, app);
+
+    view_set_draw_callback(
+        app->ticker_overview,
+        stock_app_overview_draw
+    );
+
+    view_set_input_callback(
+        app->ticker_overview,
+        stock_app_overview_input
+    );
+
+    with_view_model(
+        app->ticker_overview,
+        StockTrackerApp** model,
+        {
+            *model = app;
+        },
+        false
+    );
 
     // assign callback that pass events from views to the scene manager
     FURI_LOG_D(TAG, "stock_app_view_dispatcher_init setting callbacks");
@@ -163,7 +191,7 @@ void stock_app_view_dispatcher_init(StockTrackerApp* app) {
     view_dispatcher_add_view(app->view_dispatcher, stockTrackerView_Select, text_input_get_view(app->ticker_select));
 
     FURI_LOG_D(TAG, "stock_app_view_dispatcher_init adding view stock ticker overview");
-    view_dispatcher_add_view(app->view_dispatcher, stockTrackerView_Overview, view_get_view(app->ticker_overview));
+    view_dispatcher_add_view(app->view_dispatcher, stockTrackerView_Overview, app->ticker_overview);
 
     FURI_LOG_D(TAG, "stock_app_view_dispatcher_init adding view stock ticker delete");
     view_dispatcher_add_view(app->view_dispatcher, stockTrackerView_TickerDelete, submenu_get_view(app->ticker_delete));
