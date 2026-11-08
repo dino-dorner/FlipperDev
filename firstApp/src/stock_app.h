@@ -28,6 +28,7 @@ typedef struct {
     //UI modules
     Menu* menu;
     TextInput* ticker_select;
+    TextInput* wifi;
     View* ticker_overview;
     Submenu* ticker_delete;
 
@@ -40,6 +41,13 @@ typedef struct {
     float stock_changes[MAX_TICKERS];
     bool stock_loaded[MAX_TICKERS];
     char tickers[MAX_TICKERS][TICKER_LENGTH];
+
+    //for wifi
+    char wifi_ssid[33];
+    char wifi_password[65];
+
+    bool wifi_configured;
+    bool wifi_connected;
 
     //for the custom view.
     size_t selected_index;
@@ -69,6 +77,11 @@ void stock_app_scene_on_enter_stock_overview(void* context);
 bool stock_app_scene_on_event_stock_overview(void* context, SceneManagerEvent event);
 void stock_app_scene_on_exit_stock_overview(void* context);
 
+//Wifi scene
+void stock_app_scene_on_enter_wifi(void* context);
+bool stock_app_scene_on_event_wifi(void* context, SceneManagerEvent event);
+void stock_app_scene_on_exit_wifi(void* context);
+
 // Application functions
 void stock_app_set_log_level(void);
 StockTrackerApp* stock_app_init(void);
@@ -88,7 +101,6 @@ void stock_app_delete_callback(void* context, uint32_t index);
 
 // Add ticker callback
 void stock_app_ticker_input_callback(void* context);
-
 
 //Add and remove ticker functions
 bool stock_app_add_ticker(
@@ -117,6 +129,7 @@ typedef enum {
     stockTrackerScene_TickerSelect,
     stockTrackerScene_TickerScreen,
     stockTrackerScene_TickerDelete,
+    stockTrackerScene_Wifi,
     //Easy way to count the amount of scenes
     //that auto increments due to enum.
     stockTrackerScene_Count
@@ -124,13 +137,14 @@ typedef enum {
 
 /** ids for the 2 types of view used by the app */
 typedef enum { stockTrackerView_Main, stockTrackerView_Select,
-    stockTrackerView_Overview, stockTrackerView_TickerDelete, stockTrackerView_Count} StockTrackerView;
+    stockTrackerView_Overview, stockTrackerView_TickerDelete, stockTrackerView_Wifi,
+     stockTrackerView_Count} StockTrackerView;
 
 /** all custom events */
 typedef enum { stockTracker_ShowTickerSelect, stockTracker_ShowTickerOverview, 
     stockTracker_TickerEntered, stockTracker_DeleteTickerSelected, 
     stockTracker_ShowTickerDelete, stockTracker_StockResponseReceived,
-    stockTracker_NextStock, stockTracker_PreviousStock+
+    stockTracker_NextStock, stockTracker_PreviousStock
 } StockTrackerEvent;
 
 /* main menu scene */

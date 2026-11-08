@@ -18,7 +18,8 @@ void (*const stock_ticker_scene_on_enter_handlers[])(void*) = {
     stock_app_scene_on_enter_main_menu,
     stock_app_scene_on_enter_stock_select,
     stock_app_scene_on_enter_stock_overview,
-    stock_app_scene_on_enter_delete_ticker
+    stock_app_scene_on_enter_delete_ticker,
+    stock_app_scene_on_enter_wifi
 };
 
 /** collection of all scene on event handlers - in the same order as their enum */
@@ -26,7 +27,8 @@ bool (*const stock_ticker_scene_on_event_handlers[])(void*, SceneManagerEvent) =
     stock_app_scene_on_event_main_menu,
     stock_app_scene_on_event_stock_select,
     stock_app_scene_on_event_stock_overview,
-    stock_app_scene_on_event_delete_ticker
+    stock_app_scene_on_event_delete_ticker,
+    stock_app_scene_on_event_wifi
 };
 
 /** collection of all scene on exit handlers - in the same order as their enum */
@@ -34,7 +36,8 @@ void (*const stock_ticker_scene_on_exit_handlers[])(void*) = {
     stock_app_scene_on_exit_main_menu,
     stock_app_scene_on_exit_stock_select,
     stock_app_scene_on_exit_stock_overview,
-    stock_app_scene_on_exit_delete_ticker
+    stock_app_scene_on_exit_delete_ticker,
+    stock_app_scene_on_event_wifi
 };
 
 /** collection of all on_enter, on_event, on_exit handlers */
@@ -142,6 +145,7 @@ void stock_app_view_dispatcher_init(StockTrackerApp* app) {
     app->menu = menu_alloc();
     app->ticker_select = text_input_alloc();
     app->ticker_overview = view_alloc();
+    app->wifi = text_input_alloc();
 
     view_allocate_model(
         app->ticker_overview,
@@ -195,6 +199,9 @@ void stock_app_view_dispatcher_init(StockTrackerApp* app) {
 
     FURI_LOG_D(TAG, "stock_app_view_dispatcher_init adding view stock ticker delete");
     view_dispatcher_add_view(app->view_dispatcher, stockTrackerView_TickerDelete, submenu_get_view(app->ticker_delete));
+
+    FURI_LOG_D(TAG, "stock_app_view_dispatcher_init adding wifi");
+    view_dispatcher_add_view(app->view_dispatcher, stockTrackerView_Wifi, text_input_get_view(app->wifi));
 }
 
 /** custom event handler - passes the event to the scene manager */
@@ -225,9 +232,11 @@ void stock_app_free(StockTrackerApp *app) {
     view_dispatcher_remove_view(app->view_dispatcher, stockTrackerView_Select);
     view_dispatcher_remove_view(app->view_dispatcher, stockTrackerView_Overview);
     view_dispatcher_remove_view(app->view_dispatcher, stockTrackerView_TickerDelete);
+    view_dispatcher_remove_view(app->view_dispatcher, stockTrackerView_Wifi)
     view_dispatcher_free(app->view_dispatcher);
     menu_free(app->menu);
     text_input_free(app->ticker_select);
+    text_input_free(app->wifi);
     view_free(app->ticker_overview);
     submenu_free(app->ticker_delete);
     free(app);

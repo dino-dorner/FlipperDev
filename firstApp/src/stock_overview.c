@@ -60,7 +60,7 @@ bool stock_app_scene_on_event_stock_overview(void* context, SceneManagerEvent ev
             return true;
     }
 
-    if (event.event == stockTracker_stockResponseReceived) {
+    if (event.event == stockTracker_StockResponseReceived) {
         view_commit_model(app->ticker_overview, true);
         return true;
     }

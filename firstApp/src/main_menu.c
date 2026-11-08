@@ -28,6 +28,9 @@ void stock_app_menu_callback_main_menu(void* context, uint32_t index) {
     case Menu_TickerDelete:
         scene_manager_handle_custom_event(app->scene_manager, stockTracker_ShowTickerDelete);
         break;
+    case Menu_Wifi:
+        scene_manager_handle_custom_event(app->scene_manager, stockTracker_ShowWifi);
+        break;
     }
     
 }
@@ -51,7 +54,7 @@ void stock_app_scene_on_enter_main_menu(void* context) {
         app);
     menu_add_item(
         app->menu,
-        "Selected Ticker Overview",
+        "Ticker Overview",
         NULL,
         Menu_TickerOverview,
         stock_app_menu_callback_main_menu,
@@ -61,6 +64,14 @@ void stock_app_scene_on_enter_main_menu(void* context) {
         "Delete Stock Ticker",
         NULL,
         Menu_TickerDelete,
+        stock_app_menu_callback_main_menu,
+        app
+    );
+    menu_add_item(
+        app->menu,
+        "Wifi Setup",
+        NULL,
+        Wifi,
         stock_app_menu_callback_main_menu,
         app
     );
@@ -86,6 +97,10 @@ bool stock_app_scene_on_event_main_menu(void* context, SceneManagerEvent event) 
                 break;
             case stockTracker_ShowTickerDelete:
                 scene_manager_next_scene(app->scene_manager, stockTrackerScene_TickerDelete);
+                consumed = true;
+                break;
+            case stockTracker_ShowWifi:
+                scene_manager_next_scene(app->scene_manager, stockTrackerScene_Wifi);
                 consumed = true;
                 break;
             }
